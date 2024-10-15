@@ -8,9 +8,17 @@ const port = process.env.PORT || 3000;
 // Serve static files from the "views" directory
 app.use(express.static('views'));
 
-// Path completo de la base de datos movies.db
-// Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('C:\\Users\\datagrip\\movies.db');
+
+// Ruta alternativa para la base de datos movies.db (No me funcionaba)
+const dbPath = path.join(__dirname, 'movies.db');
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Error al abrir la base de datos:', err.message);
+    } else {
+        console.log('Conexión establecida a la base de datos.');
+    }
+});
+
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
