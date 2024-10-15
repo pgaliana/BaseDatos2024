@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static('views'));
 
 
-// Ruta alternativa para la base de datos movies.db (No me funcionaba)
+// Ruta alternativa para la base de datos movies.db (No me funcionaba la forma anterior)
 const dbPath = path.join(__dirname, 'movies.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
@@ -47,6 +47,25 @@ app.get('/buscar', (req, res) => {
         }
     );
 });
+
+//Ruta para buscar actores o directores
+app.get('/buscar', (req, res) => {
+	const searchTerm = req.query.q;
+	//Realiza la busqueda en la BD
+	db.all(
+		'SELECT person.person_id, person_name FROM person WHERE upper(person_name) LIKE upper(?)',
+		[`%${searchTerm}%`],
+        	(err, rows) => {
+            		if (err) {
+                		console.error(err);
+                		res.status(500).send('Error en la búsqueda.');
+            		} else {
+                		res.render('resultado', { movies: rows });
+            		}
+        	}
+    	);
+});
+
 
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', (req, res) => {
