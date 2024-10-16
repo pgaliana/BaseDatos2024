@@ -70,7 +70,7 @@ app.get('/buscar', (req, res) => {
         const searchTerm = req.query.q;
         //Realiza la busqueda en la BD
         db.all(
-                'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job == 'Director' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
                 [`%${searchTerm}%`],
                 (err, rows) => {
                         if (err) {
