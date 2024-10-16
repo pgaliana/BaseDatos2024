@@ -48,12 +48,12 @@ app.get('/buscar', (req, res) => {
     );
 });
 
-//Ruta para buscar actores o directores
+//Ruta para buscar actores
 app.get('/buscar', (req, res) => {
 	const searchTerm = req.query.q;
 	//Realiza la busqueda en la BD
 	db.all(
-		'SELECT person.person_id, person_name FROM person WHERE upper(person_name) LIKE upper(?)',
+		'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name'
 		[`%${searchTerm}%`],
         	(err, rows) => {
             		if (err) {
@@ -65,6 +65,24 @@ app.get('/buscar', (req, res) => {
         	}
     	);
 });
+//Ruta para buscar directores
+app.get('/buscar', (req, res) => {
+        const searchTerm = req.query.q;
+        //Realiza la busqueda en la BD
+        db.all(
+                'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job == 'Director' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                [`%${searchTerm}%`],
+                (err, rows) => {
+                        if (err) {
+                                console.error(err);
+                                res.status(500).send('Error en la búsqueda.');
+                        } else {
+                                res.render('resultado', { movies: rows });
+                        }
+                }
+        );
+});
+
 
 
 // Ruta para la página de datos de una película particular
