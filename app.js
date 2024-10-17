@@ -11,7 +11,7 @@ app.use(express.static('views'));
 
 
 // Ruta alternativa para la base de datos movies.db (No me funcionaba la forma anterior)
-const dbPath = path.join(__dirname, 'movies.db');
+const dbPath = path.join(__dirname, 'movies (3).db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error al abrir la base de datos:', err.message);
@@ -37,52 +37,35 @@ app.get('/buscar', (req, res) => {
     db.all(
         'SELECT * FROM movie WHERE title LIKE ?',
         [`%${searchTerm}%`],
-        (err, rows) => {
-            if (err) {
+        (errMovies, movies) => {
+            if (errMovies) {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
             }
-        }
-    );
-});
-
-//Ruta para buscar actores
-app.get('/buscar', (req, res) => {
-	const searchTerm = req.query.q;
-	//Realiza la busqueda en la BD
+	});
+	//Ruta para buscar actores
 	db.all(
 		'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name'
 		[`%${searchTerm}%`],
-        	(err, rows) => {
-            		if (err) {
+        	(errActors, actors) => {
+            		if (errActors) {
                 		console.error(err);
                 		res.status(500).send('Error en la búsqueda.');
-            		} else {
-                		res.render('resultado', { movies: rows });
             		}
-        	}
-    	);
-});
-//Ruta para buscar directores
-app.get('/buscar', (req, res) => {
-        const searchTerm = req.query.q;
-        //Realiza la busqueda en la BD
-        db.all(
+        	});
+		//Ruta para buscar directores
+        	db.all(
                 'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
                 [`%${searchTerm}%`],
-                (err, rows) => {
-                        if (err) {
+                (errDirector, directors) => {
+                        if (errDirector) {
                                 console.error(err);
                                 res.status(500).send('Error en la búsqueda.');
-                        } else {
-                                res.render('resultado', { movies: rows });
                         }
+			res.render('resultado', {movies, actors, directors});
                 }
-        );
+        	);
 });
-
 
 
 // Ruta para la página de datos de una película particular
