@@ -31,40 +31,42 @@ app.get('/', (req, res) => {
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
-    const searchTerm = req.query.q;
-
-    // Realizar la búsqueda en la base de datos
-    db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
-        (errMovies, movies) => {
-            if (errMovies) {
-                console.error(err);
-                res.status(500).send('Error en la búsqueda.');
-            }
-	});
-	//Ruta para buscar actores
-	db.all(
-		'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name'
-		[`%${searchTerm}%`],
-        	(errActors, actors) => {
-            		if (errActors) {
-                		console.error(err);
-                		res.status(500).send('Error en la búsqueda.');
+    	const searchTerm = req.query.q;
+	const searchTermLike = `%${searchTerm}%`
+	// Realizar la búsqueda en la base de datos
+    	db.all(
+        	'SELECT * FROM movie WHERE title LIKE ?',
+        	[searchTermLike],
+        	(errMovies, movies) => {
+            	if (errMovies) {
+                	console.error(err);
+                	res.status(500).send('Error en la búsqueda.');
+            	}
+		//Ruta para buscar actores
+		db.all(
+			'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name'
+			[searchTermLike],
+        		(errActors, actors) => {
+            			if (errActors) {
+                			console.error(err);
+                			res.status(500).send('Error en la búsqueda.');
             		}
-        	});
-		//Ruta para buscar directores
-        	db.all(
-                'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
-                [`%${searchTerm}%`],
-                (errDirector, directors) => {
-                        if (errDirector) {
-                                console.error(err);
-                                res.status(500).send('Error en la búsqueda.');
-                        }
-			res.render('resultado', {movies, actors, directors});
-                }
+			//Ruta para buscar directores
+        		db.all(
+                	'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                	[searchTermLike],
+                	(errDirector, directors) => {
+                        	if (errDirector) {
+                                	console.error(err);
+                                	res.status(500).send('Error en la búsqueda.');
+                        	}
+				res.render('resultado', {movies, actors, directors});
+                	}
         	);
+	}
+	);
+	}
+);
 });
 
 
