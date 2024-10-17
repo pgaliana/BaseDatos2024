@@ -70,6 +70,7 @@ app.get('/buscar', (req, res) => {
 });
 
 
+
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', (req, res) => {
     const movieId = req.params.id;
