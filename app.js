@@ -32,15 +32,15 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
     	const searchTerm = req.query.q;
-	const searchTermLike = `%${searchTerm}%`
+	const searchTermLike = `%${searchTerm}%;`
 	// Realizar la búsqueda en la base de datos
     	db.all(
         	'SELECT * FROM movie WHERE title LIKE ?',
         	[searchTermLike],
         	(errMovies, movies) => {
             	if (errMovies) {
-                	console.error(err);
-                	res.status(500).send('Error en la búsqueda.');
+                	console.error(errMovies);
+                	return res.status(500).send('Error en la búsqueda.');
             	}
 		//Ruta para buscar actores
 		db.all(
@@ -48,8 +48,8 @@ app.get('/buscar', (req, res) => {
 			[searchTermLike],
         		(errActors, actors) => {
             			if (errActors) {
-                			console.error(err);
-                			res.status(500).send('Error en la búsqueda.');
+                			console.error(errActors);
+                			return res.status(500).send('Error en la búsqueda.');
             		}
 			//Ruta para buscar directores
         		db.all(
@@ -57,8 +57,8 @@ app.get('/buscar', (req, res) => {
                 	[searchTermLike],
                 	(errDirector, directors) => {
                         	if (errDirector) {
-                                	console.error(err);
-                                	res.status(500).send('Error en la búsqueda.');
+                                	console.error(errDirector);
+                                	return res.status(500).send('Error en la búsqueda.');
                         	}
 				res.render('resultado', {movies, actors, directors});
                 	}
@@ -68,8 +68,6 @@ app.get('/buscar', (req, res) => {
 	}
 );
 });
-
-
 
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', (req, res) => {
