@@ -32,10 +32,11 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
     	const searchTerm = req.query.q;
+	const searchTermLike = `%${searchTerm}%`;
 	// Realizar la búsqueda en la base de datos
     	db.all(
         	'SELECT * FROM movie WHERE title LIKE ?',
-        	['%${searchTerm}%'],
+        	[searchTermLike],
         	(errMovies, movies) => {
             	if (errMovies) {
                 	console.error(errMovies);
@@ -44,7 +45,7 @@ app.get('/buscar', (req, res) => {
 		//Ruta para buscar actores
 		db.all(
 			'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
-			['%${searchTerm}%'],
+			[searchTermLike],
         		(errActors, actors) => {
             			if (errActors) {
                 			console.error(errActors);
@@ -53,7 +54,7 @@ app.get('/buscar', (req, res) => {
 			//Ruta para buscar directores
         		db.all(
                 	'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
-                	['%${searchTerm}%'],
+                	[searchTermLike],
                 	(errDirector, directors) => {
                         	if (errDirector) {
                                 	console.error(errDirector);
