@@ -205,15 +205,8 @@ app.get('/actor/:id', (req, res) => {
     const actorId = req.params.id;
 
     // Consulta SQL para obtener las películas en las que participó el actor
-    const query = `
-    SELECT DISTINCT
-      person.person_name as actorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
-    INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE movie_cast.person_id = ?;
-  `;
+    const query = 'SELECT DISTINCT person.person_name as actorName, movie.* FROM movie INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id INNER JOIN person ON person.person_id = movie_cast.person_id WHERE movie_cast.person_id = ?;'
+    ;
 
     // Ejecutar la consulta
     db.all(query, [actorId], (err, movies) => {
@@ -234,15 +227,7 @@ app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
 
     // Consulta SQL para obtener las películas dirigidas por el director
-    const query = `
-    SELECT DISTINCT
-      person.person_name as directorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
-    INNER JOIN person ON person.person_id = movie_crew.person_id
-    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
-  `;
+    const query = 'SELECT DISTINCT person.person_name as directorName, movie.* FROM movie INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id INNER JOIN person ON person.person_id = movie_crew.person_id WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;';
 
 
     // console.log('query = ', query)
@@ -264,5 +249,5 @@ app.get('/director/:id', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, () => {
-    console.log(`Servidor en ejecución en http://localhost:${port}`);
+    console.log(`OwO`);
 });
