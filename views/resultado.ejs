@@ -17,11 +17,11 @@
     </ul>
 <% } %>
 <h2>Actores</h2>
-<% if (actors.length === 0) { %>
+<% if (actor.length === 0) { %>
     <p>El papu troll :v.</p>
 <% } else { %>
     <ul>
-        <% actors.forEach(actor => { %>
+        <% actor.forEach(actor => { %>
             <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
         <% }); %>
     </ul>
