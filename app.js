@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -8,9 +9,17 @@ const port = process.env.PORT || 3000;
 // Serve static files from the "views" directory
 app.use(express.static('views'));
 
-// Path completo de la base de datos movies.db
-// Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('C:\\Users\\datagrip\\movies.db');
+
+// Ruta alternativa para la base de datos movies.db (No me funcionaba la forma anterior)
+const dbPath = path.join(__dirname, 'movies (3).db');
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Error al abrir la base de datos:', err.message);
+    } else {
+        console.log('Conexión establecida a la base de datos.');
+    }
+});
+
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
@@ -22,21 +31,42 @@ app.get('/', (req, res) => {
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
-    const searchTerm = req.query.q;
-
-    // Realizar la búsqueda en la base de datos
-    db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
-        (err, rows) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
-            }
-        }
-    );
+    	const searchTerm = req.query.q;
+	const searchTermLike = `%${searchTerm}%`;
+	// Realizar la búsqueda en la base de datos
+    	db.all(
+        	'SELECT * FROM movie WHERE title LIKE ?',
+        	[searchTermLike],
+        	(errMovies, movies) => {
+            	if (errMovies) {
+                	console.error(errMovies);
+                	return res.status(500).send('Error en la búsqueda.');
+            	}
+		//Ruta para buscar actores
+		db.all(
+			'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+			[searchTermLike],
+        		(errActors, actors) => {
+            			if (errActors) {
+                			console.error(errActors);
+                			return res.status(500).send('Error en la búsqueda.');
+            		}
+			//Ruta para buscar directores
+        		db.all(
+                	'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                	[searchTermLike],
+                	(errDirector, directors) => {
+                        	if (errDirector) {
+                                	console.error(errDirector);
+                                	return res.status(500).send('Error en la búsqueda.');
+                        	}
+				res.render('resultado', {movies, actors, directors});
+                	}
+        	);
+	}
+	);
+	}
+);
 });
 
 // Ruta para la página de datos de una película particular
@@ -181,28 +211,17 @@ app.get('/pelicula/:id', (req, res) => {
 // Ruta para mostrar la página de un actor específico
 app.get('/actor/:id', (req, res) => {
     const actorId = req.params.id;
-
-    // Consulta SQL para obtener las películas en las que participó el actor
-    const query = `
-    SELECT DISTINCT
-      person.person_name as actorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
-    INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE movie_cast.person_id = ?;
-  `;
-
+	const query = 'SELECT movie.title, movie.release_date, person.person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id JOIN movie ON movie_cast.movie_id = movie.movie_id WHERE person.person_id = ? ORDER BY movie.release_date DESC'
+;
+a
     // Ejecutar la consulta
     db.all(query, [actorId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas del actor.');
-        } else {
-            // Obtener el nombre del actor
-            const actorName = movies.length > 0 ? movies[0].actorName : '';
-
-            res.render('actor', { actorName, movies });
+        }else {
+            const actorName = movies[0].person_name;
+	    res.render('actor', { actorName, movies });
         }
     });
 });
@@ -212,34 +231,21 @@ app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
 
     // Consulta SQL para obtener las películas dirigidas por el director
-    const query = `
-    SELECT DISTINCT
-      person.person_name as directorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
-    INNER JOIN person ON person.person_id = movie_crew.person_id
-    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
-  `;
-
-
-    // console.log('query = ', query)
+    const query =
+	'SELECT DISTINCT movie.title, movie.release_date, person.person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id JOIN movie ON movie.movie_id = movie_crew.movie_id WHERE person.person_id = ? ORDER BY movie.release_date DESC';
 
     // Ejecutar la consulta
     db.all(query, [directorId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas del director.');
-        } else {
-            // console.log('movies.length = ', movies.length)
-            // Obtener el nombre del director
-            const directorName = movies.length > 0 ? movies[0].directorName : '';
+        }else {
+            // Obtener el nombre del director del primer resultado
+            const directorName = movies[0].person_name;
             res.render('director', { directorName, movies });
         }
     });
 });
-
-
 // Iniciar el servidor
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}`);
