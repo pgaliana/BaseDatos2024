@@ -28,15 +28,36 @@ app.get('/buscar', (req, res) => {
     db.all(
         'SELECT * FROM movie WHERE title LIKE ?',
         [`%${searchTerm}%`],
-        (err, rows) => {
+        (err, Garro) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
             }
-        }
+            //Ruta para buscar actore
+            db.all(
+                'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                [`%${searchTerm}%`],
+                (err, Churro) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('Error en la búsqueda.');
+                    }
+                //Ruta para directores
+                db.all(
+                    'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND person_name LIKE ? GROUP BY person.person_id, person_name',
+                     [`%${searchTerm}%`],
+                    (err, Bang) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send('Error en la búsqueda.');
+                        }
+                    res.render('resultado', { movies: Garro, actor: Churro, directors: Bang });
+            }
+        );
+                }
     );
+        }
+);
 });
 
 // Ruta para la página de datos de una película particular
