@@ -214,7 +214,8 @@ app.get('/actor/:id', (req, res) => {
 
     // Consulta SQL para obtener las películas en las que participó el actor
     const query = `
-    'SELECT title, release_date FROM person JOIN movie_cast on person.person_id = movie_cast.person_id JOIN movie on movie_cast.movie_id = movie.movie_id WHERE person_id = ?  ORDER BY release_date desc';
+    'SELECT title, release_date FROM person JOIN movie_cast on person.person_id = movie_cast.person_id JOIN movie on movie_cast.movie_id = movie.movie_id WHERE person.person_id = ?  ORDER BY release_date desc'
+	;
 	;
 
     // Ejecutar la consulta
@@ -224,7 +225,7 @@ app.get('/actor/:id', (req, res) => {
             res.status(500).send('Error al cargar las películas del actor.');
         } else {
             // Obtener el nombre del actor
-            const actors = movies.length > 0 ? movies[0].actors : '';
+            const actor = movies[0].person_name;
             res.render('actor', { actors, movies });
         }
     });
@@ -236,7 +237,7 @@ app.get('/director/:id', (req, res) => {
 
     // Consulta SQL para obtener las películas dirigidas por el director
     const query =
-	'SELECT DISTINCT title, release_date FROM person JOIN movie_crew on person.person_id = movie_crew.person_id JOIN movie on movie_crew.movie_id = movie.movie_id WHERE person_id = ? ORDER BY release_date desc'
+	'SELECT DISTINCT title, release_date FROM person JOIN movie_crew on person.person_id = movie_crew.person_id JOIN movie on movie_crew.movie_id = movie.movie_id WHERE person_id = ? AND movie_crew.job = '\Director\' ORDER BY release_date desc'
     ;
   `;
     // Ejecutar la consulta
@@ -246,7 +247,7 @@ app.get('/director/:id', (req, res) => {
             res.status(500).send('Error al cargar las películas del director.');
         } else {
             // Obtener el nombre del director
-            const director = movies.length > 0 ? movies[0].director : '';
+            const directorName = movies[0].person_name;
             res.render('director', { director, movies });
         }
     });
