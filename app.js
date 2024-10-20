@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
