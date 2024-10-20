@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Películas con <%= personName %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+<%# Las variables isActor y isDirector debieran recibirse de manera simultánea según si la persona pertenece o no a una búsqueda%>
+
+<% if (isActor) { %>
+<h1>Películas con <%= personName %></h1>
+<ul>
+    <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
+        <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
+    <% }); %>
+</ul>
+<% } %>
+<% if (isDirector) { %>
+<h1>Películas dirigidas por <%= personName %></h1>
+<ul>
+    <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
+        <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
+    <% }); %>
+</ul>
+<% } %>
+
+<div id="inicio"><a href="/">Inicio</a></div>
+
+</body>
+</html>

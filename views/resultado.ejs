@@ -21,8 +21,8 @@
     <p>No se encontraron actores.</p>
 <% } else { %>
     <ul>
-        <% actor.forEach(actor => { %>
-            <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
+        <% actor.forEach(person => { %>
+            <li><a href="/persona/<%= person.id %>"><%= person.person_name %></a></li>
         <% }); %>
     </ul>
 <% } %>
@@ -31,8 +31,8 @@
     <p>No se encontraron directores.</p>
 <% } else { %>
     <ul>
-        <% directors.forEach((director) => { %>
-            <li><a href="/director/<%= director.id %>"><%= director.person_name %></a></li>
+        <% directors.forEach((person) => { %>
+            <li><a href="/persona/<%= person.id %>"><%= person.person_name %></a></li>
         <% }); %>
     </ul>
 
