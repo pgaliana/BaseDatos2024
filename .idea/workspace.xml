@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="caa59c7e-b35e-44bf-9902-c6ab02d32c9f" name="Changes" comment="" />
+    <list default="true" id="caa59c7e-b35e-44bf-9902-c6ab02d32c9f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,14 +29,14 @@
     "Node.js.app.js.executor": "Run",
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "<unknown>",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/santiago_garrote/BaseDeDatos/TP1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
+    "settings.editor.selected.configurable": "configurable.group.build",
     "ts.external.directory.path": "/home/santiago_garrote/.local/share/JetBrains/Toolbox/apps/webstorm/plugins/javascript-plugin/jsLanguageServicesImpl/external",
     "vue.rearranger.settings.migration": "true"
   }
@@ -42,6 +45,15 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/Assignments" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" port="3000">
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -62,7 +74,8 @@
       <workItem from="1729399765413" duration="4757000" />
       <workItem from="1729430488337" duration="453000" />
       <workItem from="1729430949475" duration="57000" />
-      <workItem from="1729434088008" duration="646000" />
+      <workItem from="1729434088008" duration="1598000" />
+      <workItem from="1729435699320" duration="212000" />
     </task>
     <servers />
   </component>
