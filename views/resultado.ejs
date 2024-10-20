@@ -25,8 +25,8 @@
     <p>La grasa estuvo aquí :vvvvvvvvvvvv.</p>
 <% } else { %>
     <ul>
-        <% actors.forEach((actor) => { %>
-            <li><a href="/actor/<%= actor.person_id %>"><%= actor.person_name %></a></li>
+        <% actors.forEach(actor => { %>
+            <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
         <% }); %>
     </ul>
 
@@ -39,7 +39,7 @@
 <% } else { %>
     <ul>
         <% directors.forEach((director) => { %>
-            <li><a href="/director/<%= director.person_id %>"><%= director.person_name %></a></li>
+            <li><a href="/director/<%= director.id %>"><%= director.person_name %></a></li>
         <% }); %>
     </ul>
 
