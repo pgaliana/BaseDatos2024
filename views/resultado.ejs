@@ -21,8 +21,11 @@
     <p>El papu troll :v.</p>
 <% } else { %>
     <ul>
-        <% actor.forEach(actor => { %>
+        <% actor.forEach((actor) => { %>
             <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
+        <% }); %>
+	<% actor.forEach((movies) => { %>
+            <li><a href="/pelicula/<%= movies.movie_id %>"><%= movies.title %></a></li>
         <% }); %>
     </ul>
 <% } %>
@@ -35,7 +38,6 @@
             <li><a href="/director/<%= director.id %>"><%= director.person_name %></a></li>
         <% }); %>
     </ul>
-
 <% } %>
 <p></p>
 <div id="inicio"><a href="/">Inicio</a></div>
