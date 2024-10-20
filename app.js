@@ -249,5 +249,5 @@ app.get('/director/:id', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, () => {
-    console.log(`Servidor en ejecución en http://localhost:${port}`);
+    console.log(`UWU`);
 });
