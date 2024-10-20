@@ -213,7 +213,7 @@ app.get('/actor/:id', (req, res) => {
     const actorId = req.params.id;
 	const query = 'SELECT movie.title, movie.release_date, person.person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id JOIN movie ON movie_cast.movie_id = movie.movie_id WHERE person.person_id = ? ORDER BY movie.release_date DESC'
 ;
-
+a
     // Ejecutar la consulta
     db.all(query, [actorId], (err, movies) => {
         if (err) {
