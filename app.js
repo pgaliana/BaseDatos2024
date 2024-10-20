@@ -210,7 +210,7 @@ app.get('/pelicula/:id', (req, res) => {
 
 // Ruta para mostrar la página de un actor específico
 app.get('/actor/:id', (req, res) => {
-    const actorId = req.params.id;
+    	const actorId = req.params.id;
 	const query = 'SELECT movie.title, movie.release_date, person.person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id JOIN movie ON movie_cast.movie_id = movie.movie_id WHERE person.person_id = ? ORDER BY movie.release_date DESC'
 ;
     // Ejecutar la consulta
@@ -219,7 +219,7 @@ app.get('/actor/:id', (req, res) => {
             console.error(err);
             res.status(500).send('Error al cargar las películas del actor.');
         }else {
-            const actorName = movies[0].person_name;
+            const actorName = movies[0].person_id;
             res.render('actor', { actorName, movies });
         }
     });
@@ -240,21 +240,8 @@ app.get('/director/:id', (req, res) => {
             res.status(500).send('Error al cargar las películas del director.');
         }else {
             // Obtener el nombre del director del primer resultado
-            const directorName = movies[0].person_name;
-	    // Organizar los datos en un objeto de película con año
-            const movieData = {
-                id: movies[0].movie_id,
-                title: movies[0].title,
-                release_date: movies[0].release_date,
-		movies: []
-		}
-	    movies.forEach(row => {
-		movieData.movies.push({
-		title: row.title,
-		release_date: row.release_date
-		});
-	});
-            res.render('director', { directorName, movies:movieData });
+            const directorName = movies[0].person_id;
+            res.render('director', { directorName, movies });
         }
     });
 });
