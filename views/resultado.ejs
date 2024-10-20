@@ -19,7 +19,7 @@
 
 <% } %>
 </ul>
-<h3>Actores</h3>
+<h2>Actores</h2>
 <ul>
 <% if (actors.length === 0) { %>
     <p>La grasa estuvo aquí :vvvvvvvvvvvv.</p>
@@ -27,6 +27,19 @@
     <ul>
         <% actors.forEach((actor) => { %>
             <li><a href="/actor/<%= actor.person_id %>"><%= actor.person_name %></a></li>
+        <% }); %>
+    </ul>
+
+<% } %>
+</ul>
+<h2>Directores</h2>
+<ul>
+<% if (directors.length === 0) { %>
+    <p>Soy el puto amo</p>
+<% } else { %>
+    <ul>
+        <% directors.forEach((director) => { %>
+            <li><a href="/director/<%= director.person_id %>"><%= director.person_name %></a></li>
         <% }); %>
     </ul>
 
