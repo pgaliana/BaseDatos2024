@@ -214,7 +214,7 @@ app.get('/actor/:id', (req, res) => {
 
     // Consulta SQL para obtener las películas en las que participó el actor
     const query = `
-    'SELECT title, release_date FROM person JOIN movie_cast on person.person_id = movie_cast.person_id JOIN movie on movie_cast.movie_id = movie.movie_id WHERE person_name LIKE ? ORDER BY release_date desc';
+    'SELECT title, release_date FROM person JOIN movie_cast on person.person_id = movie_cast.person_id JOIN movie on movie_cast.movie_id = movie.movie_id WHERE person_id = ?  ORDER BY release_date desc';
 	;
 
     // Ejecutar la consulta
@@ -224,9 +224,8 @@ app.get('/actor/:id', (req, res) => {
             res.status(500).send('Error al cargar las películas del actor.');
         } else {
             // Obtener el nombre del actor
-            const actorName = movies.length > 0 ? movies[0].actorName : '';
-
-            res.render('actor', { actorName, movies });
+            const actors = movies.length > 0 ? movies[0].actors : '';
+            res.render('actor', { actors, movies });
         }
     });
 });
@@ -236,28 +235,22 @@ app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
 
     // Consulta SQL para obtener las películas dirigidas por el director
-    const query = 
-	'SELECT DISTINCT title, release_date FROM person JOIN movie_crew on person.person_id = movie_crew.person_id JOIN movie on movie_crew.movie_id = movie.movie_id WHERE person_name LIKE \'%George Lucas%\' ORDER BY release_date desc'
+    const query =
+	'SELECT DISTINCT title, release_date FROM person JOIN movie_crew on person.person_id = movie_crew.person_id JOIN movie on movie_crew.movie_id = movie.movie_id WHERE person_id = ? ORDER BY release_date desc'
     ;
   `;
-
-
-    // console.log('query = ', query)
-
     // Ejecutar la consulta
     db.all(query, [directorId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas del director.');
         } else {
-            // console.log('movies.length = ', movies.length)
             // Obtener el nombre del director
-            const directorName = movies.length > 0 ? movies[0].directorName : '';
-            res.render('director', { directorName, movies });
+            const director = movies.length > 0 ? movies[0].director : '';
+            res.render('director', { director, movies });
         }
     });
 });
-
 
 // Iniciar el servidor
 app.listen(port, () => {
