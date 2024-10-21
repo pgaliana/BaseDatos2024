@@ -12,7 +12,7 @@
 <% } else { %>
     <ul>
         <% movies.forEach((movie) => { %>
-            <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a></li>
+            <li><a href="/movie/<%= movie.movie_id %>"><%= movie.title %></a></li>
         <% }); %>
     </ul>
 <% } %>
@@ -22,7 +22,7 @@
 <% } else { %>
     <ul>
         <% actor.forEach(person => { %>
-            <li><a href="/person/<%= person.id %>"><%= person.person_name %></a></li>
+            <li><a href="/persona/<%= person.id %>"><%= person.person_name %></a></li>
         <% }); %>
     </ul>
 <% } %>
@@ -32,7 +32,7 @@
 <% } else { %>
     <ul>
         <% directors.forEach((person) => { %>
-            <li><a href="/person/<%= person.id %>"><%= person.person_name %></a></li>
+            <li><a href="/persona/<%= person.id %>"><%= person.person_name %></a></li>
         <% }); %>
     </ul>
 

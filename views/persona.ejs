@@ -8,20 +8,29 @@
     </head>
 
     <body>
+        <h1><%= personName %></h1>
 
-        <h1>Películas con <%= personName %></h1>
+        <h1>Películas actuadas por <%= personName %></h1>
+        <% if (isActor.length === 0) { %>
+            <p>Esta persona no actúa en ninguna película.</p>
+        <% } else {%>
             <ul>
-                <%movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
-                    <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
+                <%isActor.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((isActor) => { %>
+                    <li><a href="/pelicula/<%= isActor.movie_id %>"><%= isActor.title %> (<%= new Date(isActor.release_date).getFullYear() %>)</a></li>
                 <% }); %>
             </ul>
+        <% } %>
 
     <h1>Películas dirigidas por <%= personName %></h1>
-        <ul>
-            <%movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
-                <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
-            <% }); %>
-        </ul>
+        <% if (isDirector.length === 0) { %>
+        <p>Esta persona no dirigió ninguna película.</p>
+        <% } else { %>
+            <ul>
+                <%isDirector.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((isDirector) => { %>
+                    <li><a href="/pelicula/<%= isDirector.movie_id %>"><%= isDirector.title %> (<%= new Date(isDirector.release_date).getFullYear() %>)</a></li>
+                <% }); %>
+            </ul>
+        <% } %>
 
     <div id="inicio"><a href="/">Inicio</a></div>
 
