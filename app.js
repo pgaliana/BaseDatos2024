@@ -257,6 +257,55 @@ app.get('/director/:id', (req, res) => {
     });
 });
 
+// Ruta para mostrar la página de una persona específica
+app.get('/person/:id', (req, res) => {
+    const personID = req.params.id;
+
+    /*
+    La consulta debiera tomar todas las películas en donde la persona actuó o dirigió
+    Agregar una columna booleana según si es o no actor. Ídem para director
+    Utilizar los valores para el filtro de películas en persona.ejs
+     */
+
+    const isActor = `
+    SELECT DISTINCT person.person_name as actorName, movie.*
+    FROM movie
+    INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
+    INNER JOIN person ON person.person_id = movie_cast.person_id
+    WHERE movie_cast.person_id = ?;
+  `;
+
+    const isDirector = `
+    SELECT DISTINCT person.person_name as personName, movie.*
+    FROM movie
+    INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
+    INNER JOIN person ON person.person_id = movie_crew.person_id
+    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
+  `;
+
+    const query = `
+    select *
+    from isActor
+    inner join isDirector on isActor.personName = isDirector.personName
+    `
+
+
+    // console.log('query = ', query)
+
+    // Ejecutar la consulta
+    db.all(query, [personID], (err, movies) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error al cargar las películas de la persona.');
+        } else {
+            // console.log('movies.length = ', movies.length)
+            // Obtener el nombre del director
+            const personName = movies.length > 0 ? movies[0].personName : '';
+            res.render('person', { personName, movies });
+        }
+    });
+});
+
 
 // Iniciar el servidor
 app.listen(port, () => {
