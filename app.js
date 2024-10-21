@@ -66,8 +66,36 @@ app.get('/pelicula/:id', (req, res) => {
     const movieId = req.params.id;
 
     // Consulta SQL para obtener los datos de la película, elenco y crew
-    const query = 'SELECT m.*, GROUP_CONCAT(DISTINCT genre_name) AS genre, GROUP_CONCAT(DISTINCT keyword_name) AS keyword, GROUP_CONCAT(DISTINCT language_name) AS language, GROUP_CONCAT(DISTINCT company_name) AS production_company, GROUP_CONCAT(DISTINCT country_name) AS production_country, GROUP_CONCAT(DISTINCT pers.person_name) AS cast_members, GROUP_CONCAT(DISTINCT pers2.person_name) AS crew_members, GROUP_CONCAT(DISTINCT pers3.person_name) AS directors FROM movie m LEFT JOIN movie_genres mg ON m.movie_id = mg.movie_id LEFT JOIN genre g ON mg.genre_id = g.genre_id LEFT JOIN movie_keywords mk ON m.movie_id = mk.movie_id LEFT JOIN keyword k ON mk.keyword_id = k.keyword_id LEFT JOIN movie_languages ml ON m.movie_id = ml.movie_id LEFT JOIN language l ON ml.language_id = l.language_id LEFT JOIN movie_company mc ON m.movie_id = mc.movie_id LEFT JOIN production_company p ON mc.company_id = p.company_id LEFT JOIN production_country pc ON m.movie_id = pc.movie_id LEFT JOIN country c ON pc.country_id = c.country_id LEFT JOIN movie_cast mc2 ON m.movie_id = mc2.movie_id LEFT JOIN person pers ON mc2.person_id = pers.person_id LEFT JOIN movie_crew mc3 ON m.movie_id = mc3.movie_id LEFT JOIN person pers2 ON mc3.person_id = pers2.person_id LEFT JOIN movie_crew mc4 ON m.movie_id = mc4.movie_id AND mc4.job = '/Director/' LEFT JOIN person pers3 ON mc4.person_id = pers3.person_id WHERE m.movie_id = ? GROUP BY m.movie_id';
-
+    const query = `
+    SELECT m.*,
+        GROUP_CONCAT(DISTINCT genre_name) AS genre,
+        GROUP_CONCAT(DISTINCT keyword_name) AS keyword,
+        GROUP_CONCAT(DISTINCT language_name) AS language,
+        GROUP_CONCAT(DISTINCT company_name) AS production_company,
+        GROUP_CONCAT(DISTINCT country_name) AS production_country,
+        GROUP_CONCAT(DISTINCT pers.person_name) AS cast_members,
+        GROUP_CONCAT(DISTINCT pers2.person_name) AS crew_members,
+        GROUP_CONCAT(DISTINCT pers3.person_name) AS directors
+    FROM movie m
+    LEFT JOIN movie_genres mg ON m.movie_id = mg.movie_id
+    LEFT JOIN genre g ON mg.genre_id = g.genre_id
+    LEFT JOIN movie_keywords mk ON m.movie_id = mk.movie_id
+    LEFT JOIN keyword k ON mk.keyword_id = k.keyword_id
+    LEFT JOIN movie_languages ml ON m.movie_id = ml.movie_id
+    LEFT JOIN language l ON ml.language_id = l.language_id
+    LEFT JOIN movie_company mc ON m.movie_id = mc.movie_id
+    LEFT JOIN production_company p ON mc.company_id = p.company_id
+    LEFT JOIN production_country pc ON m.movie_id = pc.movie_id
+    LEFT JOIN country c ON pc.country_id = c.country_id
+    LEFT JOIN movie_cast mc2 ON m.movie_id = mc2.movie_id
+    LEFT JOIN person pers ON mc2.person_id = pers.person_id
+    LEFT JOIN movie_crew mc3 ON m.movie_id = mc3.movie_id
+    LEFT JOIN person pers2 ON mc3.person_id = pers2.person_id
+    LEFT JOIN movie_crew mc4 ON m.movie_id = mc4.movie_id AND mc4.job = 'Director'
+    LEFT JOIN person pers3 ON mc4.person_id = pers3.person_id
+    WHERE m.movie_id = ?
+    GROUP BY m.movie_id;
+`;
 
     // Ejecutar la consulta
     db.all(query, [movieId], (err, rows) => {
@@ -75,8 +103,9 @@ app.get('/pelicula/:id', (req, res) => {
             console.error(err);
             res.status(500).send('Error al cargar los datos de la película.');
         } else {
-console.log('Datos de la pelicula; ', rows);
+res.render('pelicula', {movie: rows[0]});
 }
+});
 });
 
 // Ruta para mostrar la página de un actor específico
