@@ -227,7 +227,7 @@ app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
 
     // Consulta SQL para obtener las películas dirigidas por el director
-    const query = 'SELECT DISTINCT person.person_name as directorName, movie.* FROM movie INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id INNER JOIN person ON person.person_id = movie_crew.person_id WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;';
+    const query = 'SELECT DISTINCT person.person_name as directorName, movie.* FROM movie INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id INNER JOIN person ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND movie_crew.person_id = ?;';
 
 
     // console.log('query = ', query)
