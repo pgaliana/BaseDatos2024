@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,88 +6,55 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1><%= movie.title %></h1>
-    <h3>Fecha: <%= movie.release_date %></h3>
-    <h3>Duración: <%= movie.runtime %> minutos</h3>
-    <h3>Presupuesto: $<%= movie.budget.toLocaleString() %></h3>
-    <h3>Ingresos: $<%= movie.revenue.toLocaleString() %></h3>
-    <h3>Estado: <%= movie.status %></h3>
-    
-    <h3>Dirigida por: </h3>
+<h1><%= movie.title %></h1>
+<h3>Fecha: <%= movie.release_date %></h3>
+<h3>Dirigida por: </h3>
+<ul>
+<% if (actor.length === 0) { %>
+    <p>El papu troll :v.</p>
+<% } else { %>
     <ul>
-        <% movie.directors.forEach((director) => { %>
-            <li>
-                <a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a>
-            </li>
+        <% actor.forEach((actor) => { %>
+            <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
         <% }); %>
     </ul>
-    
-    <h3>Escrita por: </h3>
-    <ul>
-        <% movie.writers.forEach((writer) => { %>
-            <li><%= writer.crew_member_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Argumento:</h3>
-    <div id="overview">
-        <p><%= movie.overview %></p>
-    </div>
-    
-    <h3>Géneros:</h3>
-    <ul>
-        <% movie.genres.forEach((genre) => { %>
-            <li><%= genre.genre_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Palabras clave:</h3>
-    <ul>
-        <% movie.keywords.forEach((keyword) => { %>
-            <li><%= keyword.keyword_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Países de producción:</h3>
-    <ul>
-        <% movie.production_countries.forEach((country) => { %>
-            <li><%= country.country_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Idiomas:</h3>
-    <ul>
-        <% movie.languages.forEach((language) => { %>
-            <li><%= language.language_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Compañías de producción:</h3>
-    <ul>
-        <% movie.production_companies.forEach((company) => { %>
-            <li><%= company.company_name %></li>
-        <% }); %>
-    </ul>
-    
-    <h3>Elenco:</h3>
-    <ul>
-        <% movie.cast.sort((a, b) => a.cast_order - b.cast_order).forEach((actor) => { %>
-            <li>
-                <a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %>
-            </li>
-        <% }); %>
-    </ul>
-    
-    <h3>Crew:</h3>
-    <ul>
-        <% movie.crew.forEach((crewMember) => { %>
-            <li>
-                <%= crewMember.crew_member_name %> - <%= crewMember.department_name %> (<%= crewMember.job %>)
-            </li>
-        <% }); %>
-    </ul>
+<% } %>
 
-    <div id="inicio"><a href="/">Inicio</a></div>
+	<% if (Array.isArray(movie.directors)){ %>
+    <% movie.directors.forEach((director) => { %>
+        <li>
+            <a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a>
+        </li>
+	<%}
+	else {
+    <% }); %>
+</ul>
+<h3>Escrita por: </h3>
+<ul>
+    <% movie.writers.forEach((writer) => { %>
+        <li>
+            <%= writer.crew_member_name %>
+        </li>
+    <% }); %>
+</ul>
+<h3>Argumento:</h3>
+<div id="overview"><p><%= movie.overview %></p></div>
+<h3>Elenco:</h3>
+<ul>
+    <% movie.cast.sort((a, b) => a.cast_order - b.cast_order).forEach((actor) => { %>
+        <li><a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %></li>
+    <% }); %>
+</ul>
+<h3>Crew:</h3>
+<ul>
+    <% movie.crew.forEach((crewMember) => { %>
+        <li>
+            <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
+            (<%= crewMember.job %>)
+        </li>
+    <% }); %>
+</ul>
+<p></p>
+<div id="inicio"><a href="/">Inicio</a></div>
 </body>
 </html>
-
