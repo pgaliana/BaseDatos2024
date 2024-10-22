@@ -15,7 +15,7 @@ const db = new sqlite3.Database('./movies.db');
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// Ruta para el inicion
+// Ruta para el inicio de sesion
 app.get('/', (req, res) => {
     const user_name = req.query.uName;
     const user_password = req.query.uPassword;
@@ -42,6 +42,8 @@ app.get('/', (req, res) => {
         res.render('registro');
     }
 });
+
+
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
