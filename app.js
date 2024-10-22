@@ -97,6 +97,34 @@ app.get('/user', (req, res) => {
     })
 })
 
+// Ruta para modificar un usuario
+app.get('/modifyUser', (req, res) => {
+    const userId = req.cookies['user_id']
+    const userName = req.query.userName
+    const userPassword = req.query.userPassword
+    const userEmail = req.query.userEmail
+    if (userName !== undefined && userEmail !== undefined){
+        const userUpdateQuery = 'UPDATE Users SET user_name = ?, user_password = ?,user_email = ? WHERE user_id = ?'
+        db.all(userUpdateQuery, [userName, userPassword, userEmail, userId], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error en la update.');
+            } else{
+                res.redirect(`/login`);
+            }
+        })
+    } else {
+        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?'
+        db.all(
+            userDataQuery,
+            [userId],
+         (err, result) => {
+                res.render('user/modifyUser', {user_name: result[0]['user_name'], user_password: result[0]['user_password'], user_email: result[0]['user_email']});
+         }
+        )
+    }
+})
+
 // Ruta para eliminar un usuario
 app.get('/deleteUser', (req, res) => {
     const userId = req.query.userId;

@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa59c7e-b35e-44bf-9902-c6ab02d32c9f" name="Changes" comment="Created the users and movie_users tables">
-      <change afterPath="$PROJECT_DIR$/views/user/deleteUser.ejs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/user/user.ejs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movies.db" beforeDir="false" afterPath="$PROJECT_DIR$/movies.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/signUpExitoso.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/signUpExitoso.ejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/user/user.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/user/user.ejs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +28,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Node.js.app.js.executor": "Debug",
+    "Node.js.app.js.executor": "Run",
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "garro/ej1",
@@ -73,6 +71,7 @@
       <workItem from="1729430488337" duration="453000" />
       <workItem from="1729430949475" duration="57000" />
       <workItem from="1729434088008" duration="646000" />
+      <workItem from="1729623320696" duration="732000" />
     </task>
     <servers />
   </component>
@@ -82,17 +81,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created the users and movie_users tables" />
     <option name="LAST_COMMIT_MESSAGE" value="Created the users and movie_users tables" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/app.js</url>
-          <line>104</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
