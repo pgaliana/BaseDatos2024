@@ -16,7 +16,7 @@
         <% } else {%>
             <ul>
                 <%isActor.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
-                    <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
+                    <li><a href="/pelicula/<%= movie.movie_id %>">"<%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)" como "<%= movie.characterName%>"</a></li>
                 <% }); %>
             </ul>
         <% } %>
