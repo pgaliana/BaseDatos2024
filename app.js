@@ -35,7 +35,7 @@ app.get('/login', (req, res) => {
                 } else {
                     if (result.length > 0) {
                         res.cookie('user_id', result[0]["user_id"]);
-                        res.redirect('/index');
+                        res.redirect('./index');
                     } else {
                         res.render('login');
                     }
@@ -70,6 +70,64 @@ app.get('/signUp', (req, res) => {
             }
         }
     )
+})
+
+// Ruta para el sign up exitoso
+app.get('/signUpExitoso', (req, res) => {
+    res.render('signUpExitoso');
+})
+
+// Ruta para buscador
+app.get('/index', (req, res) => {
+    res.render('index');
+})
+
+// Ruta para cuenta
+app.get('/user', (req, res) => {
+    const userId = req.cookies['user_id'];
+
+    const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+    db.all(userDataQuery, [userId],(err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error en la busqueda.');
+        } else{
+            res.render('user/user', {user_name: result[0]['user_name'], user_email: result[0]['user_email']});
+        }
+    })
+})
+
+// Ruta para eliminar un usuario
+app.get('/deleteUser', (req, res) => {
+    const userId = req.query.userId;
+    var user = {}
+
+    if (userId !== undefined) {
+        const userDeleteQuery = 'DELETE FROM Users WHERE user_id = ?';
+        db.all(
+            userDeleteQuery,
+            [req.cookies['user_id']],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en la busqueda.');
+                } else{
+                    res.redirect('/login')
+                }
+            }
+        )
+    } else {
+        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+        db.all(userDataQuery, [req.cookies.user_id],(err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error en la busqueda.');
+            } else{
+                user = result[0];
+                res.render('user/deleteUser', {user_name: user['user_name'], user_id: user['user_id']});
+            }
+        })
+    }
 })
 
 // Ruta para buscar películas
