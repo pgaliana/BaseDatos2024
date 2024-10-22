@@ -258,43 +258,36 @@ app.get('/director/:id', (req, res) => {
 });
 
 // Ruta para mostrar la página de una persona específica
-app.get('/person/:id', (req, res) => {
-    const personID = req.params.id;
+app.get('/persona/:id', (req, res) => {
+    const personId = req.params.id;
 
-    const actorQuery = `
-    SELECT DISTINCT person.person_name as personName, movie.*
+    // Consulta SQL para obtener las películas en donde aparece la persona
+    const query = `
+    SELECT DISTINCT person.person_name as personName, movie.*, true as isActor, false as isDirector
     FROM movie
     INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE movie_cast.person_id = ?;
-  `;
-
-    const directorQuery = `
-    SELECT DISTINCT person.person_name as personName, movie.*
+    WHERE person.person_id = ?
+    UNION
+    SELECT person.person_name as personName, movie.*, false as isActor, true as isDirector
     FROM movie
     INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
     INNER JOIN person ON person.person_id = movie_crew.person_id
     WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
   `;
 
-    //Ejecutar la consulta
-    db.all(actorQuery, [personID], (err, isActor) => {
+    // Ejecutar la consulta
+    db.all(query, [personId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas de la persona.');
         } else {
-            db.all(directorQuery, [personID], (err, isDirector) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send('Error al cargar las películas de la persona.');
-                } else {
-                    const personName = isDirector.length > 0 ? isDirector[0].personName : '';
-                    res.render('persona', {personName, isActor, isDirector});
-                }
-            });
+            const personName = movies.length > 0 ? movies[0].personName : '';
+            res.render('persona', { personName, movies });
         }
     });
 });
+
 
 // Iniciar el servidor
 app.listen(port, () => {
