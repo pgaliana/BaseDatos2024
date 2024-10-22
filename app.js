@@ -1,12 +1,15 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+const cookieParser = require('cookie-parser');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
+app.use(cookieParser());
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
@@ -15,10 +18,145 @@ const db = new sqlite3.Database('./movies.db');
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// Ruta para la página de inicio
-app.get('/', (req, res) => {
-    res.render('index');
+// Ruta para el inicio de sesion
+app.get('/login', (req, res) => {
+    const user_name = req.query.uName;
+    const user_password = req.query.uPassword;
+
+    if (user_name !== undefined  && user_password !== undefined) {
+        const userQuery = 'SELECT * FROM Users WHERE user_name = ? AND user_password = ?';
+        db.all(
+            userQuery,
+            [user_name, user_password],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en la búsqueda.');
+                } else {
+                    if (result.length > 0) {
+                        res.cookie('user_id', result[0]["user_id"]);
+                        res.redirect('./index');
+                    } else {
+                        res.render('login');
+                    }
+                }
+            }
+        )
+    } else {
+        res.render('login');
+    }
 });
+
+// Ruta para registrarse
+app.get('/signUp', (req, res) => {
+    const userName = req.query.uName;
+    const userPassword = req.query.uPassword;
+    const userEmail = req.query.uEmail;
+
+    const signUpQuery = 'INSERT INTO Users(user_name, user_password, user_email, super_user) VALUES (?,?,?, 0)'
+    db.all(
+        signUpQuery,
+        [userName, userPassword, userEmail],
+        (err, result) => {
+            if (userName !== undefined  && userPassword !== undefined) {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en el registro.');
+                } else{
+                    res.redirect('signUpExitoso');
+                }
+            } else {
+                res.render('signUp');
+            }
+        }
+    )
+})
+
+// Ruta para el sign up exitoso
+app.get('/signUpExitoso', (req, res) => {
+    res.render('signUpExitoso');
+})
+
+// Ruta para buscador
+app.get('/index', (req, res) => {
+    res.render('index');
+})
+
+// Ruta para cuenta
+app.get('/user', (req, res) => {
+    const userId = req.cookies['user_id'];
+
+    const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+    db.all(userDataQuery, [userId],(err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error en la busqueda.');
+        } else{
+            res.render('user/user', {user_name: result[0]['user_name'], user_email: result[0]['user_email']});
+        }
+    })
+})
+
+// Ruta para modificar un usuario
+app.get('/modifyUser', (req, res) => {
+    const userId = req.cookies['user_id']
+    const userName = req.query.userName
+    const userPassword = req.query.userPassword
+    const userEmail = req.query.userEmail
+    if (userName !== undefined && userEmail !== undefined){
+        const userUpdateQuery = 'UPDATE Users SET user_name = ?, user_password = ?,user_email = ? WHERE user_id = ?'
+        db.all(userUpdateQuery, [userName, userPassword, userEmail, userId], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error en la update.');
+            } else{
+                res.redirect(`/login`);
+            }
+        })
+    } else {
+        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?'
+        db.all(
+            userDataQuery,
+            [userId],
+         (err, result) => {
+                res.render('user/modifyUser', {user_name: result[0]['user_name'], user_password: result[0]['user_password'], user_email: result[0]['user_email']});
+         }
+        )
+    }
+})
+
+// Ruta para eliminar un usuario
+app.get('/deleteUser', (req, res) => {
+    const userId = req.query.userId;
+    var user = {}
+
+    if (userId !== undefined) {
+        const userDeleteQuery = 'DELETE FROM Users WHERE user_id = ?';
+        db.all(
+            userDeleteQuery,
+            [req.cookies['user_id']],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en la busqueda.');
+                } else{
+                    res.redirect('/login')
+                }
+            }
+        )
+    } else {
+        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+        db.all(userDataQuery, [req.cookies.user_id],(err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error en la busqueda.');
+            } else{
+                user = result[0];
+                res.render('user/deleteUser', {user_name: user['user_name'], user_id: user['user_id']});
+            }
+        })
+    }
+})
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
