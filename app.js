@@ -1,12 +1,15 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+const cookieParser = require('cookie-parser');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
+app.use(cookieParser());
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
@@ -16,7 +19,7 @@ const db = new sqlite3.Database('./movies.db');
 app.set('view engine', 'ejs');
 
 // Ruta para el inicio de sesion
-app.get('/', (req, res) => {
+app.get('/login', (req, res) => {
     const user_name = req.query.uName;
     const user_password = req.query.uPassword;
 
@@ -31,19 +34,43 @@ app.get('/', (req, res) => {
                     res.status(500).send('Error en la búsqueda.');
                 } else {
                     if (result.length > 0) {
-                        res.render('index', {})
+                        res.cookie('user_id', result[0]["user_id"]);
+                        res.redirect('/index');
                     } else {
-                        res.render('registro');
+                        res.render('login');
                     }
                 }
             }
         )
     } else {
-        res.render('registro');
+        res.render('login');
     }
 });
 
+// Ruta para registrarse
+app.get('/signUp', (req, res) => {
+    const userName = req.query.uName;
+    const userPassword = req.query.uPassword;
+    const userEmail = req.query.uEmail;
 
+    const signUpQuery = 'INSERT INTO Users(user_name, user_password, user_email) VALUES (?,?,?)'
+    db.all(
+        signUpQuery,
+        [userName, userPassword, userEmail],
+        (err, result) => {
+            if (userName !== undefined  && userPassword !== undefined) {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en el registro.');
+                } else{
+                    res.redirect('signUpExitoso');
+                }
+            } else {
+                res.render('signUp');
+            }
+        }
+    )
+})
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
