@@ -29,7 +29,7 @@ app.get('/buscar', (req, res) => {
     db.all(
         'SELECT * FROM movie WHERE title LIKE ?',
         [`%${searchTerm}%`],
-        (err, Garro) => {
+        (err, movieList) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
@@ -38,7 +38,7 @@ app.get('/buscar', (req, res) => {
             db.all(
                 'SELECT person.person_id as id, person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
                 [`%${searchTerm}%`],
-                (err, Churro) => {
+                (err, actorList) => {
                     if (err) {
                         console.error(err);
                         res.status(500).send('Error en la búsqueda.');
@@ -47,12 +47,12 @@ app.get('/buscar', (req, res) => {
                 db.all(
                     'SELECT person.person_id as id, person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND person_name LIKE ? GROUP BY person.person_id, person_name',
                      [`%${searchTerm}%`],
-                    (err, Bang) => {
+                    (err, directorList) => {
                         if (err) {
                             console.error(err);
                             res.status(500).send('Error en la búsqueda.');
                         }
-                    res.render('resultado', { movies: Garro, actor: Churro, directors: Bang });
+                    res.render('resultado', { movies: movieList, actor: actorList, directors: directorList });
             }
         );
                 }
@@ -262,14 +262,16 @@ app.get('/persona/:id', (req, res) => {
     const personId = req.params.id;
 
     // Consulta SQL para obtener las películas en donde aparece la persona
-    const query = `
-    SELECT DISTINCT person.person_name as personName, movie.*, true as isActor, false as isDirector
+    const actorQuery = `
+    SELECT DISTINCT person.person_name as personName, movie.*
     FROM movie
     INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE person.person_id = ?
-    UNION
-    SELECT person.person_name as personName, movie.*, false as isActor, true as isDirector
+    WHERE person.person_id = ?;
+    `
+
+    const directorQuery = `
+    SELECT person.person_name as personName, movie.*
     FROM movie
     INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
     INNER JOIN person ON person.person_id = movie_crew.person_id
@@ -277,17 +279,23 @@ app.get('/persona/:id', (req, res) => {
   `;
 
     // Ejecutar la consulta
-    db.all(query, [personId], (err, movies) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Error al cargar las películas de la persona.');
-        } else {
-            const personName = movies.length > 0 ? movies[0].personName : '';
-            res.render('persona', { personName, movies });
+    db.all(actorQuery, [personId], (err, isActor) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error en la búsqueda.');
+            }
+            db.all(directorQuery, [personId], (err, isDirector) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('Error en la búsqueda.');
+                    }
+                    const personName = isActor.length > 0 ? isActor[0].personName : '';
+                    res.render('persona', {personName, isActor, isDirector});
+                }
+            );
         }
-    });
+    );
 });
-
 
 // Iniciar el servidor
 app.listen(port, () => {
