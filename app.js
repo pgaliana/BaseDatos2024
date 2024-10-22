@@ -53,7 +53,7 @@ app.get('/signUp', (req, res) => {
     const userPassword = req.query.uPassword;
     const userEmail = req.query.uEmail;
 
-    const signUpQuery = 'INSERT INTO Users(user_name, user_password, user_email) VALUES (?,?,?)'
+    const signUpQuery = 'INSERT INTO Users(user_name, user_password, user_email, super_user) VALUES (?,?,?, 0)'
     db.all(
         signUpQuery,
         [userName, userPassword, userEmail],
