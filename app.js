@@ -10,14 +10,37 @@ app.use(express.static('views'));
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('C:\\Users\\datagrip\\movies.db');
+const db = new sqlite3.Database('./movies.db');
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// Ruta para la página de inicio
+// Ruta para el inicion
 app.get('/', (req, res) => {
-    res.render('index');
+    const user_name = req.query.uName;
+    const user_password = req.query.uPassword;
+
+    if (user_name !== undefined  && user_password !== undefined) {
+        const userQuery = 'SELECT * FROM Users WHERE user_name = ? AND user_password = ?';
+        db.all(
+            userQuery,
+            [user_name, user_password],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Error en la búsqueda.');
+                } else {
+                    if (result.length > 0) {
+                        res.render('index', {})
+                    } else {
+                        res.render('registro');
+                    }
+                }
+            }
+        )
+    } else {
+        res.render('registro');
+    }
 });
 
 // Ruta para buscar películas
