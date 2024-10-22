@@ -24,9 +24,6 @@
         <% actor.forEach((actor) => { %>
             <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
         <% }); %>
-	<% actor.forEach((movies) => { %>
-            <li><a href="/pelicula/<%= movies.movie_id %>"><%= movies.title %></a></li>
-        <% }); %>
     </ul>
 <% } %>
 <h2>Directores</h2>
