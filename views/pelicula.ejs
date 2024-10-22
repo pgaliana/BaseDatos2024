@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,10 +10,23 @@
 <h3>Fecha: <%= movie.release_date %></h3>
 <h3>Dirigida por: </h3>
 <ul>
+<% if (actor.length === 0) { %>
+    <p>El papu troll :v.</p>
+<% } else { %>
+    <ul>
+        <% actor.forEach((actor) => { %>
+            <li><a href="/actor/<%= actor.id %>"><%= actor.person_name %></a></li>
+        <% }); %>
+    </ul>
+<% } %>
+
+	<% if (Array.isArray(movie.directors)){ %>
     <% movie.directors.forEach((director) => { %>
         <li>
             <a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a>
         </li>
+	<%}
+	else {
     <% }); %>
 </ul>
 <h3>Escrita por: </h3>
