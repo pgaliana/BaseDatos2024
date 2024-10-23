@@ -57,7 +57,7 @@ app.get('/signUp', (req, res) => {
     const userPassword = req.query.uPassword;
     const userEmail = req.query.uEmail;
 
-    const signUpQuery = 'INSERT INTO User(user_name, user_password, user_email, user_super) VALUES (?,?,?, 0)'
+    const signUpQuery = 'INSERT INTO User(user_name, user_password, user_email, user_super) VALUES (?,?,?, 0) RETURNING user_id'
     db.all(
         signUpQuery,
         [userName, userPassword, userEmail],
@@ -67,18 +67,14 @@ app.get('/signUp', (req, res) => {
                     console.log(err);
                     res.status(500).send('Error en el registro.');
                 } else{
-                    res.redirect('signUpExitoso');
+                    res.cookie('user_id', result[0]["user_id"]);
+                    res.render('signUpExitoso', {user_name: userName, user_password: userPassword});
                 }
             } else {
                 res.render('signUp');
             }
         }
     )
-})
-
-// Ruta para el sign up exitoso
-app.get('/signUpExitoso', (req, res) => {
-    res.render('signUpExitoso');
 })
 
 // Ruta para buscador
