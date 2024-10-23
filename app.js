@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,7 +24,7 @@ app.get('/login', (req, res) => {
     const user_password = req.query.uPassword;
 
     if (user_name !== undefined  && user_password !== undefined) {
-        const userQuery = 'SELECT * FROM Users WHERE user_name = ? AND user_password = ?';
+        const userQuery = 'SELECT * FROM User WHERE user_name = ? AND user_password = ?';
         db.all(
             userQuery,
             [user_name, user_password],
@@ -52,7 +53,7 @@ app.get('/signUp', (req, res) => {
     const userPassword = req.query.uPassword;
     const userEmail = req.query.uEmail;
 
-    const signUpQuery = 'INSERT INTO Users(user_name, user_password, user_email, super_user) VALUES (?,?,?, 0)'
+    const signUpQuery = 'INSERT INTO User(user_name, user_password, user_email, user_super) VALUES (?,?,?, 0)'
     db.all(
         signUpQuery,
         [userName, userPassword, userEmail],
@@ -85,7 +86,7 @@ app.get('/index', (req, res) => {
 app.get('/user', (req, res) => {
     const userId = req.cookies['user_id'];
 
-    const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+    const userDataQuery = 'SELECT * FROM User WHERE user_id = ?';
     db.all(userDataQuery, [userId],(err, result) => {
         if (err) {
             console.log(err);
@@ -103,7 +104,7 @@ app.get('/modifyUser', (req, res) => {
     const userPassword = req.query.userPassword
     const userEmail = req.query.userEmail
     if (userName !== undefined && userEmail !== undefined){
-        const userUpdateQuery = 'UPDATE Users SET user_name = ?, user_password = ?,user_email = ? WHERE user_id = ?'
+        const userUpdateQuery = 'UPDATE User SET user_name = ?, user_password = ?,user_email = ? WHERE user_id = ?'
         db.all(userUpdateQuery, [userName, userPassword, userEmail, userId], (err, result) => {
             if (err) {
                 console.log(err);
@@ -113,7 +114,7 @@ app.get('/modifyUser', (req, res) => {
             }
         })
     } else {
-        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?'
+        const userDataQuery = 'SELECT * FROM User WHERE user_id = ?'
         db.all(
             userDataQuery,
             [userId],
@@ -130,7 +131,7 @@ app.get('/deleteUser', (req, res) => {
     var user = {}
 
     if (userId !== undefined) {
-        const userDeleteQuery = 'DELETE FROM Users WHERE user_id = ?';
+        const userDeleteQuery = 'DELETE FROM User WHERE user_id = ?';
         db.all(
             userDeleteQuery,
             [req.cookies['user_id']],
@@ -144,7 +145,7 @@ app.get('/deleteUser', (req, res) => {
             }
         )
     } else {
-        const userDataQuery = 'SELECT * FROM Users WHERE user_id = ?';
+        const userDataQuery = 'SELECT * FROM User WHERE user_id = ?';
         db.all(userDataQuery, [req.cookies.user_id],(err, result) => {
             if (err) {
                 console.log(err);
@@ -376,6 +377,33 @@ app.get('/persona/:id', (req, res) => {
     );
 });
 
+// Pagina Keywords
+app.get('/keyword', (req, res) => {
+    res.render('keywords/keywordSearcher');
+})
+
+// Busqueda de Keywords
+app.get('/buscar-keyword/', (req, res) => {
+    const query =
+        `WITH keyword_nameMovie_id AS(
+        SELECT keyword_name, movie_id FROM keyword JOIN movie_keywords ON keyword.keyword_id = movie_keywords.keyword_id
+        )
+        SELECT title, keyword_name FROM movie JOIN keyword_nameMovie_id on movie.movie_id = keyword_nameMovie_id.movie_id
+        WHERE keyword_name = ?
+        `
+    db.all(
+        'SELECT * FROM movie WHERE title LIKE ?',
+        [`%${searchTerm}%`],
+        (err, rows) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error en la búsqueda.');
+            } else {
+                res.render('resultado', { movies: rows });
+            }
+        }
+    );
+})
 
 // Iniciar el servidor
 app.listen(port, () => {
