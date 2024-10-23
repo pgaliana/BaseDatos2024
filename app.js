@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = process.env.PORT || 3000;
