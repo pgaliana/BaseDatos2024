@@ -23,7 +23,12 @@ app.get('/login', (req, res) => {
     const user_name = req.query.uName;
     const user_password = req.query.uPassword;
 
-    if (user_name !== undefined  && user_password !== undefined) {
+    if (user_name === undefined  || user_password === undefined) {
+        res.render('login');
+    } else if (user_name === "-1" && user_password === "-1") {
+        res.cookie('user_id', "-1");
+        res.redirect('./index');
+    } else {
         const userQuery = 'SELECT * FROM User WHERE user_name = ? AND user_password = ?';
         db.all(
             userQuery,
@@ -42,8 +47,7 @@ app.get('/login', (req, res) => {
                 }
             }
         )
-    } else {
-        res.render('login');
+
     }
 });
 
@@ -83,18 +87,23 @@ app.get('/index', (req, res) => {
 })
 
 // Ruta para cuenta
-app.get('/user', (req, res) => {
+app.get('/userProfile', (req, res) => {
     const userId = req.cookies['user_id'];
+    const userLoggedIn = userId !== "-1"
 
     const userDataQuery = 'SELECT * FROM User WHERE user_id = ?';
-    db.all(userDataQuery, [userId],(err, result) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('Error en la búsqueda.');
-        } else{
-            res.render('user/user', {user_name: result[0]['user_name'], user_email: result[0]['user_email']});
-        }
-    })
+    if (userId !== "-1") {
+        db.all(userDataQuery, [userId], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error en la búsqueda.');
+            } else {
+                res.render('user/userProfile', {user_name: result[0]['user_name'], user_email: result[0]['user_email'], user_loggedIn: userLoggedIn});
+            }
+        })
+    } else {
+        res.render('user/userProfile', {user_name: 'Anonymous', user_email: 'Anonymous', user_loggedIn: userLoggedIn});
+    }
 })
 
 // Ruta para modificar un usuario
@@ -103,6 +112,8 @@ app.get('/modifyUser', (req, res) => {
     const userName = req.query.userName
     const userPassword = req.query.userPassword
     const userEmail = req.query.userEmail
+    const userLoggedIn = userId !== "-1"
+
     if (userName !== undefined && userEmail !== undefined){
         const userUpdateQuery = 'UPDATE User SET user_name = ?, user_password = ?,user_email = ? WHERE user_id = ?'
         db.all(userUpdateQuery, [userName, userPassword, userEmail, userId], (err, result) => {
@@ -119,7 +130,7 @@ app.get('/modifyUser', (req, res) => {
             userDataQuery,
             [userId],
          (err, result) => {
-                res.render('user/modifyUser', {user_name: result[0]['user_name'], user_password: result[0]['user_password'], user_email: result[0]['user_email']});
+                res.render('user/modifyUser', {user_name: result[0]['user_name'], user_password: result[0]['user_password'], user_email: result[0]['user_email'], user_loggedIn: userLoggedIn});
          }
         )
     }
@@ -128,6 +139,7 @@ app.get('/modifyUser', (req, res) => {
 // Ruta para eliminar un usuario
 app.get('/deleteUser', (req, res) => {
     const userId = req.query.userId;
+
     var user = {}
 
     if (userId !== undefined) {
