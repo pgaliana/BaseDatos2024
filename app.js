@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
@@ -34,9 +34,9 @@ app.get('/buscar', (req, res) => {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
             }
-            //Ruta para buscar actores
+            //Ruta para buscar actore
             db.all(
-                'SELECT person.person_id as id, person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
+                'SELECT person_name FROM person JOIN movie_cast ON person.person_id = movie_cast.person_id WHERE upper(person_name) LIKE upper(?) GROUP BY person.person_id, person_name',
                 [`%${searchTerm}%`],
                 (err, Churro) => {
                     if (err) {
@@ -45,7 +45,7 @@ app.get('/buscar', (req, res) => {
                     }
                 //Ruta para directores
                 db.all(
-                    'SELECT person.person_id as id, person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND person_name LIKE ? GROUP BY person.person_id, person_name',
+                    'SELECT person_name FROM person JOIN movie_crew ON person.person_id = movie_crew.person_id WHERE movie_crew.job = \'Director\' AND person_name LIKE ? GROUP BY person.person_id, person_name',
                      [`%${searchTerm}%`],
                     (err, Bang) => {
                         if (err) {
