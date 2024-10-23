@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
@@ -232,7 +232,6 @@ app.get('/actor/:id', (req, res) => {
 // Ruta para mostrar la página de un director específico
 app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
-
     // Consulta SQL para obtener las películas dirigidas por el director
     const query = `
     SELECT DISTINCT
@@ -243,10 +242,7 @@ app.get('/director/:id', (req, res) => {
     INNER JOIN person ON person.person_id = movie_crew.person_id
     WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
   `;
-
-
     // console.log('query = ', query)
-
     // Ejecutar la consulta
     db.all(query, [directorId], (err, movies) => {
         if (err) {
