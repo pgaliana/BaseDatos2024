@@ -18,7 +18,7 @@ const db = new sqlite3.Database('./movies.db');
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// Ruta para el inicio de sesion
+// Ruta para el inicio de sesión
 app.get('/login', (req, res) => {
     const user_name = req.query.uName;
     const user_password = req.query.uPassword;
@@ -90,7 +90,7 @@ app.get('/user', (req, res) => {
     db.all(userDataQuery, [userId],(err, result) => {
         if (err) {
             console.log(err);
-            res.status(500).send('Error en la busqueda.');
+            res.status(500).send('Error en la búsqueda.');
         } else{
             res.render('user/user', {user_name: result[0]['user_name'], user_email: result[0]['user_email']});
         }
@@ -108,7 +108,7 @@ app.get('/modifyUser', (req, res) => {
         db.all(userUpdateQuery, [userName, userPassword, userEmail, userId], (err, result) => {
             if (err) {
                 console.log(err);
-                res.status(500).send('Error en la update.');
+                res.status(500).send('Error en la modificación.');
             } else{
                 res.redirect(`/login`);
             }
@@ -138,7 +138,7 @@ app.get('/deleteUser', (req, res) => {
             (err, result) => {
                 if (err) {
                     console.log(err);
-                    res.status(500).send('Error en la busqueda.');
+                    res.status(500).send('Error en la búsqueda.');
                 } else{
                     res.redirect('/login')
                 }
@@ -149,7 +149,7 @@ app.get('/deleteUser', (req, res) => {
         db.all(userDataQuery, [req.cookies.user_id],(err, result) => {
             if (err) {
                 console.log(err);
-                res.status(500).send('Error en la busqueda.');
+                res.status(500).send('Error en la búsqueda.');
             } else{
                 user = result[0];
                 res.render('user/deleteUser', {user_name: user['user_name'], user_id: user['user_id']});
@@ -382,7 +382,7 @@ app.get('/keyword', (req, res) => {
     res.render('keywords/keywordSearcher');
 })
 
-// Busqueda de Keywords
+// Búsqueda de Keywords
 app.get('/buscar-keyword/', (req, res) => {
     const keyword = req.query.q
     const keywordSearchQuery =
