@@ -384,7 +384,8 @@ app.get('/keyword', (req, res) => {
 
 // Búsqueda de Keywords
 app.get('/buscar-keyword/', (req, res) => {
-    const query =
+    const keyword = req.query.q
+    const keywordSearchQuery =
         `WITH keyword_nameMovie_id AS(
         SELECT keyword_name, movie_id FROM keyword JOIN movie_keywords ON keyword.keyword_id = movie_keywords.keyword_id
         )
@@ -392,14 +393,14 @@ app.get('/buscar-keyword/', (req, res) => {
         WHERE keyword_name = ?
         `
     db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
+        keywordSearchQuery,
+        [keyword],
         (err, rows) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
             } else {
-                res.render('resultado', { movies: rows });
+                res.render('keywords/result_keywords', { movies: rows });
             }
         }
     );
