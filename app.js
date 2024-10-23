@@ -377,6 +377,33 @@ app.get('/director/:id', (req, res) => {
     });
 });
 
+// Pagina Keywords
+app.get('/keyword', (req, res) => {
+    res.render('keywords/keywordSearcher');
+})
+
+// Busqueda de Keywords
+app.get('/buscar-keyword/', (req, res) => {
+    const query =
+        `WITH keyword_nameMovie_id AS(
+        SELECT keyword_name, movie_id FROM keyword JOIN movie_keywords ON keyword.keyword_id = movie_keywords.keyword_id
+        )
+        SELECT title, keyword_name FROM movie JOIN keyword_nameMovie_id on movie.movie_id = keyword_nameMovie_id.movie_id
+        WHERE keyword_name = ?
+        `
+    db.all(
+        'SELECT * FROM movie WHERE title LIKE ?',
+        [`%${searchTerm}%`],
+        (err, rows) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error en la búsqueda.');
+            } else {
+                res.render('resultado', { movies: rows });
+            }
+        }
+    );
+})
 
 // Iniciar el servidor
 app.listen(port, () => {
