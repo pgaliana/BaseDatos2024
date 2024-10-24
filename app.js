@@ -229,14 +229,15 @@ app.get('/pelicula/:id', (req, res) => {
         JOIN language l on l.language_id = ml.language_id
         JOIN movie_keywords mk on movie.movie_id = mk.movie_id
         JOIN keyword k on mk.keyword_id = k.keyword_id
-        WHERE p.movie_id = ?`,
+        WHERE p.movie_id = ?
+        GROUP BY movie.movie_id;`,
         [movieId],
         (err, result) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Error en la busqueda');
             }
-            //Consulta para obtener crew, directores, actores y escritores
+            //Toma especificamente al elenco, crew, directores y escritores
             db.all(
                 `SELECT
             movie.*,
@@ -263,8 +264,13 @@ app.get('/pelicula/:id', (req, res) => {
                     } else if (rows.length === 0) {
                         res.status(404).send('Película no encontrada.');
                     } else {
-                        // Creo el objeto movieData que almacena toda la informacion 
+                        // Organizar los datos en un objeto de película con toda la informacion de movie
                         const movieData = {
+                            genre: result[0].genre,
+                            keyword: result[0].keyword,
+                            language: result[0].language,
+                            production_company: result[0].company,
+                            production_country: result[0].country,
                             id: rows[0].movie_id,
                             title: rows[0].title,
                             popularity: rows[0].popularity,
@@ -278,11 +284,6 @@ app.get('/pelicula/:id', (req, res) => {
                             runtime: rows[0].runtime,
                             release_date: rows[0].release_date,
                             overview: rows[0].overview,
-                            genre: rows[0].genre,
-                            keyword: rows[0].keyword,
-                            language: rows[0].language,
-                            production_company: rows[0].production_company,
-                            production_country: rows[0].production_country,
                             directors: [],
                             writers: [],
                             cast: [],
@@ -385,7 +386,6 @@ app.get('/pelicula/:id', (req, res) => {
             );
         });
 });
-
 // Ruta para mostrar la página de una persona específica
 app.get('/persona/:id', (req, res) => {
     const personId = req.params.id;
