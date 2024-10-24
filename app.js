@@ -435,10 +435,10 @@ app.get('/keyword', (req, res) => {
 app.get('/buscar-keyword/', (req, res) => {
     const keyword = req.query.q
     const keywordSearchQuery =
-        `WITH keyword_nameMovie_id AS(
-        SELECT keyword_name, movie_id FROM keyword JOIN movie_keywords ON keyword.keyword_id = movie_keywords.keyword_id
-        )
-        SELECT title, keyword_name FROM movie JOIN keyword_nameMovie_id on movie.movie_id = keyword_nameMovie_id.movie_id
+        `
+        WITH keyword_nameMovie_id AS(
+        SELECT keyword_name, movie_id FROM keyword NATURAL JOIN movie_keywords)
+        SELECT title, keyword_name, movie_id FROM movie NATURAL JOIN keyword_nameMovie_id
         WHERE keyword_name = ?
         `
     db.all(
