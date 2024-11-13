@@ -36,6 +36,7 @@ app.get('/login', (req, res) => {
     } else if (user_name === undefined || user_password === undefined) {
         res.render('login', {emptyData: true, afterDeletion: false});
     } else if (user_name === "-1" && user_password === "-1") {
+        firstAccess = true;
         res.cookie('user_id', "-1");
         res.redirect('./index');
     } else {
