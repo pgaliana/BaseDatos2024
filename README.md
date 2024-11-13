@@ -6,3 +6,6 @@
 
 ### Ejecutar
 `node app.js`
+
+### Link al informe
+`https://docs.google.com/document/d/1xiWlP5PJlSRolpOsWfLoKc_6KXk2lynaFmeMiz5WMTM/edit?usp=sharing`
