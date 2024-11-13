@@ -79,7 +79,9 @@ app.get('/signUp', (req, res) => {
 
 // Ruta para buscador
 app.get('/index', (req, res) => {
-    res.render('index');
+    const userId = req.cookies['user_id'];
+    const userLoggedIn = userId !== "-1"
+    res.render('index', {userLoggedIn: userLoggedIn});
 })
 
 // Ruta para cuenta
