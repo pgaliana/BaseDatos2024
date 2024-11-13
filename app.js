@@ -389,7 +389,9 @@ app.get('/persona/:id', (req, res) => {
 
 // Pagina Keywords
 app.get('/keyword', (req, res) => {
-    res.render('keywords/keywordSearcher');
+    const userId = req.cookies['user_id'];
+    const userLoggedIn = userId !== "-1"
+    res.render('keywords/keywordSearcher', {userLoggedIn: userLoggedIn});
 })
 
 // Búsqueda de Keywords
