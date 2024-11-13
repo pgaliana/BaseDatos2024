@@ -229,7 +229,8 @@ app.get('/pelicula/:id', (req, res) => {
         JOIN language l on l.language_id = ml.language_id
         JOIN movie_keywords mk on movie.movie_id = mk.movie_id
         JOIN keyword k on mk.keyword_id = k.keyword_id
-        WHERE p.movie_id = ?`,
+        WHERE p.movie_id = ?
+        GROUP BY movie.movie_id;`,
         [movieId],
         (err, result) => {
             if (err) {
@@ -264,6 +265,11 @@ app.get('/pelicula/:id', (req, res) => {
                     } else {
                         // Organizar los datos en un objeto de película con elenco y crew
                         const movieData = {
+                            genre: result[0].genre,
+                            keyword: result[0].keyword,
+                            language: result[0].language,
+                            production_company: result[0].company,
+                            production_country: result[0].country,
                             id: rows[0].movie_id,
                             title: rows[0].title,
                             popularity: rows[0].popularity,
@@ -277,11 +283,6 @@ app.get('/pelicula/:id', (req, res) => {
                             runtime: rows[0].runtime,
                             release_date: rows[0].release_date,
                             overview: rows[0].overview,
-                            genre: rows[0].genre,
-                            keyword: rows[0].keyword,
-                            language: rows[0].language,
-                            production_company: rows[0].production_company,
-                            production_country: rows[0].production_country,
                             directors: [],
                             writers: [],
                             cast: [],
@@ -377,7 +378,6 @@ app.get('/pelicula/:id', (req, res) => {
                                 }
                             }
                         });
-
                         res.render('pelicula', {movies: movieData});
                     };
                 }
@@ -433,10 +433,11 @@ app.get('/keyword', (req, res) => {
 app.get('/buscar-keyword/', (req, res) => {
     const keyword = req.query.q
     const keywordSearchQuery =
-        `WITH keyword_nameMovie_id AS(
+        `
+        WITH keyword_nameMovie_id AS(
         SELECT keyword_name, movie_id FROM keyword JOIN movie_keywords ON keyword.keyword_id = movie_keywords.keyword_id
         )
-        SELECT title, keyword_name FROM movie JOIN keyword_nameMovie_id on movie.movie_id = keyword_nameMovie_id.movie_id
+        SELECT title, movie.movie_id,keyword_name FROM movie JOIN keyword_nameMovie_id on movie.movie_id = keyword_nameMovie_id.movie_id
         WHERE keyword_name = ?
         `
     db.all(

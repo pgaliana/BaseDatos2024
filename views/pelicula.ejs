@@ -49,7 +49,7 @@
 <h3>Elenco:</h3>
 <ul>
     <% movies.cast.sort((a, b) => a.cast - b.cast).forEach((actor) => { %>
-        <li><a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %></li>
+        <li><a href="/persona/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %></li>
     <% }); %>
 </ul>
 <h3>Crew:</h3>
