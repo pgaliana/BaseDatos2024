@@ -5,8 +5,8 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-<h1>¿Esta seguro que desea eliminar el usuario: <%= user_name %>?</h1>
-<button onclick="window.location.href= `http://localhost:3000/deleteUser?userId=<%= user_id %>`" style="margin-bottom: 10px;">Confirmar</button>
+<h1>¿Está seguro que desea eliminar el usuario: <%= user_name %>?</h1>
+<button onclick="window.location.href= `http://localhost:3000/deleteUser?userName=<%= user_name %>&userId=<%= user_id %>`" style="margin-bottom: 10px;">Confirmar</button>
 <button onclick="window.location.href= 'http://localhost:3000/userProfile'">Cancelar</button>
 </body>
 </html>

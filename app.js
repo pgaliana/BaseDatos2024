@@ -7,6 +7,9 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+let firstAccess = true;
+let afterDeletion = false;
+
 // Serve static files from the "views" directory
 app.use(express.static('views'));
 app.use(cookieParser());
@@ -20,11 +23,18 @@ app.set('view engine', 'ejs');
 
 // Ruta para el inicio de sesión
 app.get('/login', (req, res) => {
-    const user_name = req.query.uName;
-    const user_password = req.query.uPassword;
+        let user_name = req.query.uName;
+        let user_password = req.query.uPassword;
+    if (afterDeletion) {
+        user_name = undefined;
+        user_password = undefined;
+    }
 
-    if (user_name === undefined  || user_password === undefined) {
-        res.render('login');
+    if (firstAccess) {
+        firstAccess = false;
+        res.render('login', {emptyData: false, afterDeletion: false});
+    } else if (user_name === undefined || user_password === undefined) {
+        res.render('login', {emptyData: true, afterDeletion: false});
     } else if (user_name === "-1" && user_password === "-1") {
         res.cookie('user_id', "-1");
         res.redirect('./index');
@@ -42,7 +52,7 @@ app.get('/login', (req, res) => {
                         res.cookie('user_id', result[0]["user_id"]);
                         res.redirect('./index');
                     } else {
-                        res.render('login');
+                        res.render('login', {emptyData: true, afterDeletion: false});
                     }
                 }
             }
@@ -56,6 +66,11 @@ app.get('/signUp', (req, res) => {
     const userName = req.query.uName;
     const userPassword = req.query.uPassword;
     const userEmail = req.query.uEmail;
+
+    if (userName === '' || userPassword === '' || userEmail === '') {
+        res.render('signUp', {emptyData: true});
+        return;
+    }
 
     const signUpQuery = 'INSERT INTO User(user_name, user_password, user_email, user_super) VALUES (?,?,?, 0) RETURNING user_id'
     db.all(
@@ -71,7 +86,7 @@ app.get('/signUp', (req, res) => {
                     res.render('signUpExitoso', {user_name: userName, user_password: userPassword});
                 }
             } else {
-                res.render('signUp');
+                res.render('signUp', {emptyData: false});
             }
         }
     )
@@ -88,6 +103,7 @@ app.get('/index', (req, res) => {
 app.get('/userProfile', (req, res) => {
     const userId = req.cookies['user_id'];
     const userLoggedIn = userId !== "-1"
+    firstAccess = true;
 
     const userDataQuery = 'SELECT * FROM User WHERE user_id = ?';
     if (userId !== "-1") {
@@ -119,7 +135,7 @@ app.get('/modifyUser', (req, res) => {
                 console.log(err);
                 res.status(500).send('Error en la modificación.');
             } else{
-                res.redirect(`/login`);
+                res.redirect(`login?emptyData=false&afterDeletion=false`);
             }
         })
     } else {
@@ -150,7 +166,8 @@ app.get('/deleteUser', (req, res) => {
                     console.log(err);
                     res.status(500).send('Error en la búsqueda.');
                 } else{
-                    res.redirect('/login')
+                    firstAccess = true;
+                    res.redirect('/login');
                 }
             }
         )
@@ -212,7 +229,7 @@ app.get('/buscar', (req, res) => {
 app.get('/pelicula/:id', (req, res) => {
     const movieId = req.params.id;
 
-    //Tomar informacion sobre movies exlcuyendo elenco, crew y director
+    //Tomar información sobre movies excluyendo elenco, crew y director
     db.all(
         `SELECT movie.*,
         g.genre_name AS genre,
@@ -237,9 +254,9 @@ app.get('/pelicula/:id', (req, res) => {
         (err, result) => {
             if (err) {
                 console.log(err);
-                res.status(500).send('Error en la busqueda');
+                res.status(500).send('Error en la búsqueda');
             }
-            //Toma especificamente al elenco, crew, directores y escritores
+            //Toma específicamente al elenco, crew, directores y escritores
             db.all(
                 `SELECT
             movie.*,
@@ -266,7 +283,7 @@ app.get('/pelicula/:id', (req, res) => {
                     } else if (rows.length === 0) {
                         res.status(404).send('Película no encontrada.');
                     } else {
-                        // Organizar los datos en un objeto de película con toda la informacion de movie
+                        // Organizar los datos en un objeto de película con toda la información de movie
                         const movieData = {
                             genre: result[0].genre,
                             keyword: result[0].keyword,
@@ -431,7 +448,9 @@ app.get('/persona/:id', (req, res) => {
 
 // Pagina Keywords
 app.get('/keyword', (req, res) => {
-    res.render('keywords/keywordSearcher');
+    const userId = req.cookies['user_id'];
+    const userLoggedIn = userId !== "-1"
+    res.render('keywords/keywordsSearcher', {userLoggedIn: userLoggedIn});
 })
 
 // Búsqueda de Keywords

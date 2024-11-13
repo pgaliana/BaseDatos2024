@@ -7,6 +7,9 @@
     <body>
         <h1>Ingrese sus datos</h1>
         <form>
+            <% if (emptyData) { %>
+                <p style="color:red;">Por favor ingrese sus datos.</p>
+            <% } %>
             <label for="uName">User Name:</label><br>
             <input type="text" id="uName" name="uName"><br>
             <br>
